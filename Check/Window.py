@@ -10,7 +10,12 @@ window = pyglet.window.Window(width=1024, height=900, caption="Space Invaders", 
 window.set_location(400, 100)
 fps_display = FPSDisplay(window)
 fps_display.label.font_size = 50
+# sound = pyglet.resource.media('music.wav', streaming=False)
+play_flag = False
 
+player = pyglet.media.Player()
+sound = pyglet.media.load('music.wav')
+player.queue(sound)
 
 
 batch = pyglet.graphics.Batch()
@@ -47,6 +52,7 @@ enemy_list = []
 
 preloaded = False
 
+
 def distance(a, b):
     return math.sqrt((a.x - b.x)** 2 + (a.y - b.y)** 2)
 
@@ -73,7 +79,13 @@ def distance(a, b):
 
 @window.event
 def on_draw():
+    global play_flag
     window.clear()
+
+    if not play_flag:
+        player.play()
+        # print("abc")
+        play_flag = True
     if not preloaded:
         preload()
     for bg in bg_list:
@@ -81,6 +93,7 @@ def on_draw():
     actor.draw()
     batch.draw()
     label.draw()
+
 @window.event
 def on_text_motion(motion):
     if(motion == pyglet.window.key.MOTION_UP):
@@ -137,10 +150,10 @@ def update(dt):
             i.y = 20
     actor.x += uniform(-10, 10)
     actor.y += uniform(-10, 10)
-
     bg_move(dt)
 
 if __name__ == "__main__":
     pyglet.clock.schedule_interval(update, 1.0/60)
     pyglet.clock.schedule(game_loop)
+    # sound.play()
     pyglet.app.run()
